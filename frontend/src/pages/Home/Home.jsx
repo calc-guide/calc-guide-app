@@ -10,7 +10,9 @@ function TutorCard({ tutor, isSelected, onSelect }) {
       onClick={() => onSelect(tutor.id)}
       aria-pressed={isSelected}
     >
-      <span className="home-tutor-avatar" aria-hidden="true">{tutor.emoji}</span>
+    <span className="home-tutor-avatar" aria-hidden="true">
+        {tutor.name.charAt(0)}
+    </span>
       <span>
         <span className="home-tutor-name">{tutor.name}</span>
         <span className="home-tutor-style">{tutor.style}</span>
