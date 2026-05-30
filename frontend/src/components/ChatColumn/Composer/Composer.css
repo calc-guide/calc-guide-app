@@ -241,3 +241,14 @@
   margin-top: 9px;
   letter-spacing: 0.02em;
 }
+
+.file-error {
+  font-size: 11.5px;
+  color: #C0392B;
+  background: #FDECEA;
+  border: 1px solid #F5C6C2;
+  border-radius: 8px;
+  padding: 7px 12px;
+  margin-bottom: 9px;
+  font-family: var(--sans);
+}

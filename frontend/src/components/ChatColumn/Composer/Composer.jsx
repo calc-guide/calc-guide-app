@@ -1,19 +1,26 @@
 // components/ChatColumn/Composer/Composer.jsx
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import "./Composer.css";
 import AttachmentChip from "./AttachmentChip";
 import VoiceListeningBanner from "./VoiceListeningBanner";
 import ComposerTools from "./ComposerTools";
 import DesmosCalculator from "./DesmosCalculator";
 
-export default function Composer({ tutorName, onSend, isLoading, hasMessages}) {
-  const [text, setText] = useState("");
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+const MAX_FILE_SIZE_MB = 5;
+
+export default function Composer({ tutorName, onSend, isLoading, hasMessages }) {
+  const [text, setText]               = useState("");
   const [isVoiceOn, setIsVoiceOn]     = useState(false);
   const [isPhotoOn, setIsPhotoOn]     = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isMathOn, setIsMathOn]       = useState(false);
   const [attachment, setAttachment]   = useState(null);
+  const [fileError, setFileError]     = useState(null);
+
+  // Hidden file input ref — clicking the Photo button triggers this
+  const fileInputRef = useRef(null);
 
   function handleDesmosInsert(expression) {
     setText((prev) => prev ? `${prev} ${expression}` : expression);
@@ -25,6 +32,7 @@ export default function Composer({ tutorName, onSend, isLoading, hasMessages}) {
     setText("");
     setAttachment(null);
     setIsPhotoOn(false);
+    setFileError(null);
   }
 
   function handleKeyDown(e) {
@@ -34,20 +42,46 @@ export default function Composer({ tutorName, onSend, isLoading, hasMessages}) {
     }
   }
 
+  // Opens the native file picker
   function handlePhoto() {
-    // Toggle a placeholder attachment for now
     if (isPhotoOn) {
-      setAttachment(null);
-      setIsPhotoOn(false);
+      handleRemoveAttachment();
     } else {
-      setAttachment({ name: "worksheet_p3.jpg" });
-      setIsPhotoOn(true);
+      fileInputRef.current?.click();
     }
+  }
+
+  // Validates and stores the selected file
+  function handleFileChange(e) {
+    const file = e.target.files?.[0];
+
+    // Reset input so same file can be re-selected
+    e.target.value = "";
+
+    if (!file) return;
+
+    // Check it's an image
+    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+      setFileError("Please select an image file (JPEG, PNG, GIF, or WebP).");
+      return;
+    }
+
+    // Check file size
+    const sizeMB = file.size / (1024 * 1024);
+    if (sizeMB > MAX_FILE_SIZE_MB) {
+      setFileError(`Image must be under ${MAX_FILE_SIZE_MB}MB. Yours is ${sizeMB.toFixed(1)}MB.`);
+      return;
+    }
+
+    setFileError(null);
+    setAttachment({ name: file.name, file, type: file.type });
+    setIsPhotoOn(true);
   }
 
   function handleRemoveAttachment() {
     setAttachment(null);
     setIsPhotoOn(false);
+    setFileError(null);
   }
 
   return (
@@ -55,10 +89,27 @@ export default function Composer({ tutorName, onSend, isLoading, hasMessages}) {
       <div className="composer-inner">
 
         <DesmosCalculator
-            visible={isMathOn}
-            onInsert={handleDesmosInsert}
-            onClose={() => setIsMathOn(false)}
+          visible={isMathOn}
+          onInsert={handleDesmosInsert}
+          onClose={() => setIsMathOn(false)}
         />
+
+        {/* Hidden file input — triggered by Photo button */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/gif,image/webp"
+          onChange={handleFileChange}
+          style={{ display: "none" }}
+          aria-hidden="true"
+        />
+
+        {/* File error message */}
+        {fileError && (
+          <div className="file-error">
+            ⚠ {fileError}
+          </div>
+        )}
 
         {attachment && (
           <AttachmentChip
