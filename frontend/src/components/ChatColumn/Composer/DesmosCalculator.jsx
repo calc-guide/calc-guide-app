@@ -28,6 +28,7 @@ export default function DesmosCalculator({ visible, onInsert, onClose }) {
         settingsMenu: false,
         zoomButtons:  true,
         border:       false,
+        fontSize:     18,
       });
     }
 
