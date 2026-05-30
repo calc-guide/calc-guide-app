@@ -1,3 +1,6 @@
 package com.calcguide.model;
 
-public record ChatRequest(String message) {}
+import java.util.List;
+import java.util.Map;
+
+public record ChatRequest(String message, String tutorId, List<Map<String, String>> history) {}
