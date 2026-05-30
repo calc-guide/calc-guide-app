@@ -1,8 +1,9 @@
 FROM maven:3.9-eclipse-temurin-21-alpine AS build
 WORKDIR /app
-COPY pom.xml .
+COPY backend/pom.xml .
 RUN mvn dependency:go-offline -q
-COPY src ./src
+COPY backend/src ./src
+COPY frontend/dist ./src/main/resources/static
 RUN mvn clean package -DskipTests -q
 
 FROM eclipse-temurin:21-jre-alpine

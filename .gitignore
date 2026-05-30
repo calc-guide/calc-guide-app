@@ -5,7 +5,6 @@ backend/.idea/
 
 # Frontend
 frontend/node_modules/
-frontend/dist/
 
 # OS
 .DS_Store
@@ -18,3 +17,5 @@ frontend/dist/
 .env.production.local
 *.env
 
+# CLAUDE
+.claude/worktrees/
