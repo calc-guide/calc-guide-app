@@ -7,7 +7,7 @@ import VoiceListeningBanner from "./VoiceListeningBanner";
 import ComposerTools from "./ComposerTools";
 import DesmosCalculator from "./DesmosCalculator";
 
-export default function Composer({ tutorName, onSend, isLoading }) {
+export default function Composer({ tutorName, onSend, isLoading, hasMessages}) {
   const [text, setText] = useState("");
   const [isVoiceOn, setIsVoiceOn]     = useState(false);
   const [isPhotoOn, setIsPhotoOn]     = useState(false);
@@ -90,6 +90,7 @@ export default function Composer({ tutorName, onSend, isLoading }) {
             onMath={() => setIsMathOn((v) => !v)}
             onSend={handleSend}
             canSend={!isLoading && (!!text.trim() || !!attachment)}
+            canBookmark={hasMessages}
           />
         </div>
 

@@ -360,3 +360,8 @@
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
   padding: 8px;
 }
+
+.icon-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}

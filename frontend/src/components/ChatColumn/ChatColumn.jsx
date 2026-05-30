@@ -104,6 +104,7 @@ export default function ChatColumn({ tutor, onNewChat }) {
           tutor={currentTutor}
           isBookmarked={isBookmarked}
           onToggleBookmark={() => setIsBookmarked((v) => !v)}
+          hasMessages={messages.length > 0}
         />
 
         <MessageThread
@@ -116,6 +117,7 @@ export default function ChatColumn({ tutor, onNewChat }) {
           tutorName={currentTutor?.name}
           onSend={handleSendMessage}
           isLoading={isLoading}
+          hasMessages={messages.length > 0}
         />
       </div>
     </div>

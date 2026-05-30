@@ -11,6 +11,7 @@ export default function ComposerTools({
   onMath,
   onSend,
   canSend,
+  canBookmark,
 }) {
   return (
     <div className="composer-tools">
@@ -55,8 +56,10 @@ export default function ComposerTools({
       <button
         className={`tool${isBookmarked ? " on" : ""}`}
         onClick={onBookmark}
+        disabled={!canBookmark}
         aria-label={isBookmarked ? "Remove bookmark" : "Bookmark this chat"}
         aria-pressed={isBookmarked}
+        title={!canBookmark ? "Start a conversation before bookmarking" : ""}
       >
         ★
       </button>
