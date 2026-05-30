@@ -5,14 +5,19 @@ import "./Composer.css";
 import AttachmentChip from "./AttachmentChip";
 import VoiceListeningBanner from "./VoiceListeningBanner";
 import ComposerTools from "./ComposerTools";
+import DesmosCalculator from "./DesmosCalculator";
 
-export default function Composer({ tutorName, onSend, isLoading }) {
+export default function Composer({ tutorName, onSend, isLoading, hasMessages}) {
   const [text, setText] = useState("");
   const [isVoiceOn, setIsVoiceOn]     = useState(false);
   const [isPhotoOn, setIsPhotoOn]     = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isMathOn, setIsMathOn]       = useState(false);
   const [attachment, setAttachment]   = useState(null);
+
+  function handleDesmosInsert(expression) {
+    setText((prev) => prev ? `${prev} ${expression}` : expression);
+  }
 
   function handleSend() {
     if (!text.trim() && !attachment) return;
@@ -48,6 +53,13 @@ export default function Composer({ tutorName, onSend, isLoading }) {
   return (
     <div className="composer">
       <div className="composer-inner">
+
+        <DesmosCalculator
+            visible={isMathOn}
+            onInsert={handleDesmosInsert}
+            onClose={() => setIsMathOn(false)}
+        />
+
         {attachment && (
           <AttachmentChip
             filename={attachment.name}
@@ -78,6 +90,7 @@ export default function Composer({ tutorName, onSend, isLoading }) {
             onMath={() => setIsMathOn((v) => !v)}
             onSend={handleSend}
             canSend={!isLoading && (!!text.trim() || !!attachment)}
+            canBookmark={hasMessages}
           />
         </div>
 

@@ -1,6 +1,6 @@
 // components/ChatColumn/ChatHeader.jsx
 
-export default function ChatHeader({ tutor, isBookmarked, onToggleBookmark }) {
+export default function ChatHeader({ tutor, isBookmarked, onToggleBookmark, hasMessages }) {
   return (
     <div className="chat-header">
       <span className="chat-header-avatar" aria-hidden="true">
@@ -16,7 +16,9 @@ export default function ChatHeader({ tutor, isBookmarked, onToggleBookmark }) {
         <button
           className={`icon-btn${isBookmarked ? " active" : ""}`}
           onClick={onToggleBookmark}
+          disabled={!hasMessages}
           aria-pressed={isBookmarked}
+          title={!hasMessages ? "Start a conversation before bookmarking" : ""}
         >
           {isBookmarked ? "★ Bookmarked" : "★ Bookmark chat"}
         </button>

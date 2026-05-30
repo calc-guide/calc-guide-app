@@ -218,3 +218,8 @@
   color: var(--muted);
   margin-top: 8px;
 }
+
+.tool:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}

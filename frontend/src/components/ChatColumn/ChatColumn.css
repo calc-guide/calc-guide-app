@@ -345,3 +345,23 @@
   0%, 80%, 100% { transform: scale(0.7); opacity: 0.4; }
   40%            { transform: scale(1);   opacity: 1; }
 }
+
+
+/* Tutor selector popup — floats above the rail */
+.tutor-selector-popup {
+  position: absolute;
+  left: 74px;
+  top: 14px;
+  width: 220px;
+  z-index: 40;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  padding: 8px;
+}
+
+.icon-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
