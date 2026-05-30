@@ -27,16 +27,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 One deployable unit: Spring Boot serves the API **and** the built React app, same-origin (no CORS).
 
 - **Backend** (`com.calcguide`): Spring Boot Web. `HealthController` → `/api/health`. `SpaController` implements `ErrorController`: HTML 404s forward to `/index.html` (client-side routing), non-HTML errors return JSON. No DB, no security config. The Anthropic/LLM integration and its API-key env var are not yet built.
-- **Frontend**: single-page React app (`src/App.jsx` via `src/main.jsx`), calls the backend with relative `/api/...` paths.
+- **Frontend**: React SPA mounted via `src/main.jsx`; `src/App.jsx` is a page-router shell (`home`/`chat`) — the UI lives in `src/pages/` and `src/components/`. All backend calls funnel through `src/services/api.js`.
+- **Tutor IDs are a cross-file contract:** `frontend/src/pages/Home/useHome.js` (`TUTORS`) is the source of truth for tutor IDs (`rivera`/`newton`/`sunny`/`delta`). Backend `backend/src/main/resources/personalities.json` must be keyed to those **exact** IDs (the chat endpoint maps the incoming `tutorId` → `systemPrompt`). A mismatch fails silently — no prompt found, no error.
 
 ### Build / deploy topology (the non-obvious part)
-- Root **`Dockerfile`** (build context = repo root) runs the Maven build and copies `frontend/dist` into `src/main/resources/static`, so the jar serves the UI. JRE runtime stage runs the jar on `:8080`.
+- Root **`Dockerfile`** (build context = repo root) is multi-stage: a Node stage runs `npm run build` (frontend), then the Maven stage copies the freshly-built `frontend/dist` into `src/main/resources/static` so the jar serves the UI. JRE runtime stage runs the jar on `:8080`.
 - Deployed as **one Render Docker web service**, root directory `/`. Serves app + API together. Live: `https://calc-guide-app.onrender.com`
 - `docker-compose.yml` is local-dev only — Render builds the Dockerfile directly.
 
-> **Stale-UI trap:** `frontend/dist/` is committed to the repo, and the Docker build copies that *committed* `dist` — it does **not** run `npm run build`. After any frontend change you must `npm run build` AND commit the updated `frontend/dist`, or the deploy ships stale UI with no error.
+> **`frontend/dist` is a build artifact, not source:** the Docker build runs `npm run build` itself and `dist` is git-ignored — **never commit `frontend/dist`**. Render rebuilds the UI from source on every deploy. (Superseded an earlier setup where `dist` was committed and silently shipped stale UI.)
 
 > **Dev gotcha:** `vite.config.js` has no dev proxy, so `/api` calls won't reach the backend under `npm run dev`. Use `mvn spring-boot:run` (or docker compose) for an end-to-end stack, or add a Vite proxy.
+
+> **Same-origin trap:** prod serves UI + API on one origin, so the frontend must call the API same-origin. `src/services/api.js` uses `BASE_URL = VITE_API_URL || "http://localhost:8080"` — if `VITE_API_URL` is unset at build time, the prod bundle bakes in `localhost:8080` and every API call silently hits the *user's* machine, not the server. Works in local dev (localhost:8080 *is* the backend), fails only in prod. The Docker build must resolve `BASE_URL` to same-origin (empty/relative).
 
 ## Deploy / ops notes
 - Free-tier instance **sleeps after ~15 min idle** (~50s cold start). Warm `…/api/health` before demos.
