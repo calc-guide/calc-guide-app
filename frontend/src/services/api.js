@@ -29,7 +29,8 @@ export async function sendMessage({ message, tutorId, history = [] }) {
   }
 
   const data = await response.json();
-  return data.response;
+  // Backend contract is `reply`; tolerate `response` for resilience.
+  return data.reply ?? data.response;
 }
 
 /**
