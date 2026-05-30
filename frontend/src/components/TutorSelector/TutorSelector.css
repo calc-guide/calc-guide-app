@@ -1,0 +1,105 @@
+/* components/TutorSelector/TutorSelector.css */
+
+.tutor-selector-wrap {
+  position: relative;
+}
+
+.tutor-selector-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 9px 11px;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--sans);
+  transition: border-color 0.12s;
+}
+
+.tutor-selector-btn:hover {
+  border-color: var(--ink2);
+}
+
+.tutor-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--fill);
+  border: 1px solid var(--line);
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+}
+
+.tutor-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.tutor-meta-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  display: block;
+  color: var(--ink);
+}
+
+.tutor-meta-style {
+  font-size: 11px;
+  color: var(--muted);
+  display: block;
+}
+
+.tutor-caret {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* Dropdown menu */
+.tutor-menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 20;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  padding: 6px;
+}
+
+.tutor-menu-option {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.1s;
+  width: 100%;
+  background: transparent;
+  border: none;
+  text-align: left;
+  font-family: var(--sans);
+}
+
+.tutor-menu-option:hover {
+  background: var(--fill);
+}
+
+.tutor-menu-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  display: block;
+  color: var(--ink);
+}
+
+.tutor-menu-style {
+  font-size: 10.5px;
+  color: var(--muted);
+  display: block;
+}
