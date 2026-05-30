@@ -3,7 +3,7 @@
 export default function TutorMessage({ tutorName, content, showDiagram }) {
   return (
     <div className="msg tutor">
-      <span className="av" aria-hidden="true" />
+      <span className="av" aria-hidden="true">{tutorName?.charAt(0) ?? "?"}</span>
       <div className="bubble">
         <p className="who">{tutorName}</p>
         <p>{content}</p>
