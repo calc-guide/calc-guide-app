@@ -11,6 +11,7 @@ const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/gif", "image/web
 const MAX_FILE_SIZE_MB = 5;
 
 export default function Composer({ tutorName, onSend, isLoading, hasMessages }) {
+
   const [text, setText]                 = useState("");
   const [isVoiceOn, setIsVoiceOn]       = useState(false);
   const [isPhotoOn, setIsPhotoOn]       = useState(false);
@@ -76,6 +77,34 @@ export default function Composer({ tutorName, onSend, isLoading, hasMessages }) 
     if (sizeMB > MAX_FILE_SIZE_MB) {
       setFileError(`Image must be under ${MAX_FILE_SIZE_MB}MB. Yours is ${sizeMB.toFixed(1)}MB.`);
       return;
+
+    }
+
+    setFileError(null);
+    setAttachment({ name: file.name, file, type: file.type });
+    setIsPhotoOn(true);
+  }
+
+  // Validates and stores the selected file
+  function handleFileChange(e) {
+    const file = e.target.files?.[0];
+
+    // Reset input so same file can be re-selected
+    e.target.value = "";
+
+    if (!file) return;
+
+    // Check it's an image
+    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+      setFileError("Please select an image file (JPEG, PNG, GIF, or WebP).");
+      return;
+    }
+
+    // Check file size
+    const sizeMB = file.size / (1024 * 1024);
+    if (sizeMB > MAX_FILE_SIZE_MB) {
+      setFileError(`Image must be under ${MAX_FILE_SIZE_MB}MB. Yours is ${sizeMB.toFixed(1)}MB.`);
+      return;
     }
 
     setFileError(null);
@@ -122,6 +151,7 @@ export default function Composer({ tutorName, onSend, isLoading, hasMessages }) 
 
         {fileError && (
           <div className="file-error">⚠ {fileError}</div>
+
         )}
 
         {attachment && (
