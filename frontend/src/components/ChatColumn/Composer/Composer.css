@@ -1,0 +1,220 @@
+/* components/ChatColumn/Composer/Composer.css */
+
+.composer {
+  flex: 0 0 auto;
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+  padding: 12px 22px 14px;
+}
+
+.composer-inner {
+  max-width: var(--thread-max);
+  margin: 0 auto;
+}
+
+/* Attach row — shown via JS state, not CSS class toggle */
+.attach-row {
+  display: flex;
+  margin-bottom: 9px;
+}
+
+.attach-chip {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: var(--fill2);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 6px 9px 6px 6px;
+}
+
+.attach-mini {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  background: repeating-linear-gradient(45deg, var(--fill) 0 7px, var(--fill2) 7px 14px);
+  border: 1px solid var(--line);
+  display: block;
+}
+
+.attach-chip small {
+  font-size: 11px;
+  color: var(--ink2);
+}
+
+.attach-chip .rm {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 2px;
+  line-height: 1;
+}
+
+/* Voice banner */
+.voice-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 9px;
+  padding: 9px 12px;
+  border: 1px solid var(--note-line);
+  background: var(--note);
+  border-radius: 10px;
+}
+
+.pulse {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--note-ink);
+  animation: pulse 1s infinite;
+  flex: 0 0 auto;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.85); }
+  50%       { opacity: 1;    transform: scale(1.15); }
+}
+
+.voice-row small {
+  font-size: 11.5px;
+  color: var(--note-ink);
+  font-family: var(--mono);
+}
+
+.voice-wave {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 18px;
+}
+
+.voice-wave i {
+  width: 3px;
+  background: var(--note-ink);
+  border-radius: 2px;
+  opacity: 0.6;
+  animation: wave 1.1s infinite ease-in-out;
+  font-style: normal;
+  display: block;
+}
+
+@keyframes wave {
+  0%, 100% { height: 5px;  }
+  50%       { height: 16px; }
+}
+
+/* Text input box */
+.composer-box {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+  padding: 6px;
+  transition: border-color 0.12s;
+}
+
+.composer-box:focus-within {
+  border-color: var(--ink2);
+}
+
+.composer-input {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 11px;
+  font-size: 13px;
+  font-family: var(--sans);
+  color: var(--ink);
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  line-height: 1.5;
+}
+
+.composer-input::placeholder {
+  color: var(--muted);
+}
+
+/* Tool buttons row */
+.composer-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 4px 2px;
+}
+
+.tool {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  border-radius: 9px;
+  padding: 7px 10px;
+  cursor: pointer;
+  color: var(--ink2);
+  font-family: var(--sans);
+  font-size: 11.5px;
+  transition: background 0.12s;
+}
+
+.tool:hover {
+  background: var(--fill);
+}
+
+.tool.on {
+  background: var(--note);
+  border-color: var(--note-line);
+  color: var(--note-ink);
+}
+
+.tool svg {
+  display: block;
+}
+
+.tool-fx {
+  font-style: italic;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+.tools-spacer {
+  flex: 1;
+}
+
+.send {
+  background: var(--ink);
+  color: var(--panel);
+  border: none;
+  border-radius: 9px;
+  padding: 9px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--sans);
+  transition: filter 0.12s;
+}
+
+.send:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+
+.send:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.composer-note {
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 8px;
+}
