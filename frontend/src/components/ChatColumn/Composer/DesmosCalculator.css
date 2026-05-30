@@ -1,0 +1,60 @@
+/* DesmosCalculator.css */
+
+.desmos-panel {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  background: var(--panel);
+}
+
+.desmos-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--frame);
+  border-bottom: 1px solid var(--line);
+}
+
+.desmos-toolbar span {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.desmos-toolbar-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.desmos-action-btn {
+  font-family: var(--sans);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--ink2);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.desmos-action-btn:hover {
+  background: var(--fill);
+}
+
+.desmos-action-btn.primary {
+  background: var(--ink);
+  color: var(--panel);
+  border-color: var(--ink);
+}
+
+.desmos-action-btn.primary:hover {
+  filter: brightness(1.15);
+}
+
+.desmos-container {
+  height: 320px;
+  width: 100%;
+}
