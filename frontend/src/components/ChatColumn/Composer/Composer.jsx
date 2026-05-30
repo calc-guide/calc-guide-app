@@ -1,25 +1,27 @@
 // components/ChatColumn/Composer/Composer.jsx
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import "./Composer.css";
 import AttachmentChip from "./AttachmentChip";
 import VoiceListeningBanner from "./VoiceListeningBanner";
 import ComposerTools from "./ComposerTools";
 
+const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+
 export default function Composer({ tutorName, onSend, isLoading }) {
   const [text, setText] = useState("");
-  const [isVoiceOn, setIsVoiceOn]     = useState(false);
-  const [isPhotoOn, setIsPhotoOn]     = useState(false);
+  const [isVoiceOn, setIsVoiceOn]       = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const [isMathOn, setIsMathOn]       = useState(false);
-  const [attachment, setAttachment]   = useState(null);
+  const [isMathOn, setIsMathOn]         = useState(false);
+  const [attachment, setAttachment]     = useState(null);
+  const [isDragOver, setIsDragOver]     = useState(false);
+  const fileInputRef = useRef(null);
 
   function handleSend() {
     if (!text.trim() && !attachment) return;
     onSend(text, attachment);
     setText("");
     setAttachment(null);
-    setIsPhotoOn(false);
   }
 
   function handleKeyDown(e) {
@@ -29,29 +31,76 @@ export default function Composer({ tutorName, onSend, isLoading }) {
     }
   }
 
+  function readFile(file) {
+    if (!ACCEPTED_TYPES.includes(file.type)) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setAttachment({ name: file.name, dataUrl: e.target.result, mediaType: file.type });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handleFileChange(e) {
+    const file = e.target.files[0];
+    if (file) readFile(file);
+    e.target.value = "";
+  }
+
   function handlePhoto() {
-    // Toggle a placeholder attachment for now
-    if (isPhotoOn) {
+    if (attachment) {
       setAttachment(null);
-      setIsPhotoOn(false);
     } else {
-      setAttachment({ name: "worksheet_p3.jpg" });
-      setIsPhotoOn(true);
+      fileInputRef.current?.click();
     }
   }
 
-  function handleRemoveAttachment() {
-    setAttachment(null);
-    setIsPhotoOn(false);
+  function handleDragOver(e) {
+    e.preventDefault();
+    setIsDragOver(true);
+  }
+
+  function handleDragLeave() {
+    setIsDragOver(false);
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    setIsDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) readFile(file);
+  }
+
+  function handlePaste(e) {
+    const item = Array.from(e.clipboardData.items).find(
+      (i) => i.kind === "file" && ACCEPTED_TYPES.includes(i.type)
+    );
+    if (!item) return;
+    e.preventDefault();
+    const file = item.getAsFile();
+    if (file) readFile(file);
   }
 
   return (
-    <div className="composer">
+    <div
+      className={`composer${isDragOver ? " drag-over" : ""}`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      onPaste={handlePaste}
+    >
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={ACCEPTED_TYPES.join(",")}
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+      />
+
       <div className="composer-inner">
         {attachment && (
           <AttachmentChip
             filename={attachment.name}
-            onRemove={handleRemoveAttachment}
+            onRemove={() => setAttachment(null)}
           />
         )}
 
@@ -69,7 +118,7 @@ export default function Composer({ tutorName, onSend, isLoading }) {
           />
           <ComposerTools
             isVoiceOn={isVoiceOn}
-            isPhotoOn={isPhotoOn}
+            isPhotoOn={!!attachment}
             isBookmarked={isBookmarked}
             isMathOn={isMathOn}
             onVoice={() => setIsVoiceOn((v) => !v)}
@@ -82,7 +131,7 @@ export default function Composer({ tutorName, onSend, isLoading }) {
         </div>
 
         <p className="composer-note">
-          type · draw in calculator · speak · attach photo
+          type · attach photo · drag &amp; drop · paste image (⌘V)
         </p>
       </div>
     </div>
