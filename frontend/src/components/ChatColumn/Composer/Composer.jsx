@@ -1,6 +1,6 @@
 // components/ChatColumn/Composer/Composer.jsx
 
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
 import "./Composer.css";
 import AttachmentChip from "./AttachmentChip";
 import VoiceListeningBanner from "./VoiceListeningBanner";
@@ -18,6 +18,7 @@ export default function Composer({ tutorName, onSend, isLoading, hasMessages }) 
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isMathOn, setIsMathOn]         = useState(false);
   const [attachment, setAttachment]     = useState(null);
+  const [isDragOver, setIsDragOver]     = useState(false);
   const [fileError, setFileError]       = useState(null);
 
   // Two hidden inputs — one for file picker, one for camera
@@ -44,6 +45,15 @@ export default function Composer({ tutorName, onSend, isLoading, hasMessages }) 
     }
   }
 
+  function readFile(file) {
+    if (!ACCEPTED_TYPES.includes(file.type)) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setAttachment({ name: file.name, dataUrl: e.target.result, mediaType: file.type });
+    };
+    reader.readAsDataURL(file);
+  }
+      
   // Opens native file picker
   function handlePhoto() {
     if (isPhotoOn) {
@@ -112,6 +122,30 @@ export default function Composer({ tutorName, onSend, isLoading, hasMessages }) 
     setIsPhotoOn(true);
   }
 
+  function handleDragOver(e) {
+    e.preventDefault();
+    setIsDragOver(true);
+  }
+
+  function handleDragLeave() {
+    setIsDragOver(false);
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    setIsDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) readFile(file);
+  }
+
+  function handlePaste(e) {
+    const item = Array.from(e.clipboardData.items).find(
+      (i) => i.kind === "file" && ACCEPTED_TYPES.includes(i.type)
+    );
+    if (!item) return;
+    e.preventDefault();
+    const file = item.getAsFile();
+    if (file) readFile(file);
   function handleRemoveAttachment() {
     setAttachment(null);
     setIsPhotoOn(false);
@@ -119,7 +153,21 @@ export default function Composer({ tutorName, onSend, isLoading, hasMessages }) 
   }
 
   return (
-    <div className="composer">
+    <div
+      className={`composer${isDragOver ? " drag-over" : ""}`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      onPaste={handlePaste}
+    >
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={ACCEPTED_TYPES.join(",")}
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+      />
+
       <div className="composer-inner">
 
         <DesmosCalculator
@@ -157,7 +205,7 @@ export default function Composer({ tutorName, onSend, isLoading, hasMessages }) 
         {attachment && (
           <AttachmentChip
             filename={attachment.name}
-            onRemove={handleRemoveAttachment}
+            onRemove={() => setAttachment(null)}
           />
         )}
 
@@ -175,7 +223,7 @@ export default function Composer({ tutorName, onSend, isLoading, hasMessages }) 
           />
           <ComposerTools
             isVoiceOn={isVoiceOn}
-            isPhotoOn={isPhotoOn}
+            isPhotoOn={!!attachment}
             isBookmarked={isBookmarked}
             isMathOn={isMathOn}
             onVoice={() => setIsVoiceOn((v) => !v)}
@@ -190,7 +238,7 @@ export default function Composer({ tutorName, onSend, isLoading, hasMessages }) 
         </div>
 
         <p className="composer-note">
-          type · draw in calculator · speak · attach photo · take photo
+          type · draw in calculator · speak · attach photo · paste image (⌘V) · take photo
         </p>
       </div>
     </div>

@@ -25,10 +25,15 @@ export function useChat({ tutor }) {
     setError(null);
 
     try {
+      const attachmentPayload = attachment
+        ? { data: attachment.dataUrl.split(",")[1], mediaType: attachment.mediaType }
+        : null;
+
       const reply = await sendMessage({
         message: text,
         tutorId: tutor?.id,
         history: messages.map((m) => ({ role: m.role, content: m.content })),
+        attachment: attachmentPayload,
       });
 
       const tutorMsg = {

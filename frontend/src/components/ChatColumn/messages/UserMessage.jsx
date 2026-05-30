@@ -5,10 +5,12 @@ export default function UserMessage({ content, attachment }) {
     <div className="msg user">
       <span className="av" aria-hidden="true">You</span>
       <div className="bubble">
-        {attachment && (
-          <div className="photo-thumb">
-            <span>{attachment.name ?? "uploaded photo"}</span>
-          </div>
+        {attachment?.dataUrl && (
+          <img
+            className="photo-thumb"
+            src={attachment.dataUrl}
+            alt={attachment.name ?? "uploaded photo"}
+          />
         )}
         <p>{content}</p>
       </div>

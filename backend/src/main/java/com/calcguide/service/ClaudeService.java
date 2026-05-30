@@ -55,7 +55,8 @@ public class ClaudeService {
         return prompts;
     }
 
-    public String chat(String tutorId, String userMessage, List<Map<String, String>> history) {
+    public String chat(String tutorId, String userMessage, List<Map<String, String>> history,
+                       com.calcguide.model.ChatRequest.Attachment attachment) {
         String systemPrompt = systemPrompts.getOrDefault(tutorId, FALLBACK_SYSTEM_PROMPT);
 
         List<Map<String, Object>> messages = new ArrayList<>();
@@ -65,7 +66,24 @@ public class ClaudeService {
                 messages.add(Map.of("role", role, "content", entry.get("content")));
             }
         }
-        messages.add(Map.of("role", "user", "content", userMessage));
+
+        if (attachment != null) {
+            List<Map<String, Object>> content = new ArrayList<>();
+            content.add(Map.of(
+                    "type", "image",
+                    "source", Map.of(
+                            "type", "base64",
+                            "media_type", attachment.mediaType(),
+                            "data", attachment.data()
+                    )
+            ));
+            if (userMessage != null && !userMessage.isBlank()) {
+                content.add(Map.of("type", "text", "text", userMessage));
+            }
+            messages.add(Map.of("role", "user", "content", content));
+        } else {
+            messages.add(Map.of("role", "user", "content", userMessage));
+        }
 
         Map<String, Object> body = Map.of(
                 "model", model,

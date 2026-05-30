@@ -17,11 +17,11 @@ const BASE_URL =
  * @param {Array}  history  - Previous messages [{ role, content }, ...]
  * @returns {Promise<string>} Claude's reply text
  */
-export async function sendMessage({ message, tutorId, history = [] }) {
+export async function sendMessage({ message, tutorId, history = [], attachment = null }) {
   const response = await fetch(`${BASE_URL}/api/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message, tutorId, history }),
+    body: JSON.stringify({ message, tutorId, history, attachment }),
   });
 
   if (!response.ok) {
