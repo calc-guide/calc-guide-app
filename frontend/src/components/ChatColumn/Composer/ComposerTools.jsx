@@ -7,10 +7,12 @@ export default function ComposerTools({
   isMathOn,
   onVoice,
   onPhoto,
+  onCamera,
   onBookmark,
   onMath,
   onSend,
   canSend,
+  canBookmark,
 }) {
   return (
     <div className="composer-tools">
@@ -27,7 +29,7 @@ export default function ComposerTools({
       <button
         className={`tool${isPhotoOn ? " on" : ""}`}
         onClick={onPhoto}
-        aria-label="Attach photo"
+        aria-label="Attach photo from file"
         aria-pressed={isPhotoOn}
       >
         <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden="true">
@@ -35,6 +37,19 @@ export default function ComposerTools({
           <circle cx="5" cy="6" r="1.4" />
         </svg>
         Photo
+      </button>
+
+      {/* Camera button — opens device camera */}
+      <button
+        className="tool"
+        onClick={onCamera}
+        aria-label="Take a photo with camera"
+      >
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden="true">
+          <path d="M1.5 5.5a1 1 0 0 1 1-1h1l1-1.5h4l1 1.5h1a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1v-5z" />
+          <circle cx="7.5" cy="8" r="1.8" />
+        </svg>
+        Camera
       </button>
 
       <button
@@ -55,8 +70,10 @@ export default function ComposerTools({
       <button
         className={`tool${isBookmarked ? " on" : ""}`}
         onClick={onBookmark}
+        disabled={!canBookmark}
         aria-label={isBookmarked ? "Remove bookmark" : "Bookmark this chat"}
         aria-pressed={isBookmarked}
+        title={!canBookmark ? "Start a conversation before bookmarking" : ""}
       >
         ★
       </button>

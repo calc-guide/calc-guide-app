@@ -3,7 +3,7 @@
 export default function UserMessage({ content, attachment }) {
   return (
     <div className="msg user">
-      <span className="av" aria-hidden="true" />
+      <span className="av" aria-hidden="true">You</span>
       <div className="bubble">
         {attachment?.dataUrl && (
           <img
