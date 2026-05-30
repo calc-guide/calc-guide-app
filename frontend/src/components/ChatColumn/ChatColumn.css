@@ -138,6 +138,31 @@
 .ob-step b    { font-size: 12px; display: block; margin-bottom: 3px; }
 .ob-step span { font-size: 11px; color: var(--muted); line-height: 1.45; }
 
+/* ---- Message entrance animations ---- */
+
+@keyframes msg-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.msg {
+  animation: msg-slide-up 0.35s ease-out both;
+}
+
+.msg.tutor {
+  animation-delay: 0.1s;
+}
+
+.msg.user {
+  animation-delay: 0s;
+}
+
 /* ---- Messages ---- */
 .msg {
   display: flex;
