@@ -1,0 +1,72 @@
+/* components/Rail/Rail.css */
+
+.rail {
+  width: var(--rail-w);
+  background: var(--frame);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px 0;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+
+.rail-logo {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: var(--ink);
+  color: var(--panel);
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.rail-spacer {
+  flex: 1;
+}
+
+/* RailButton */
+.rail-btn {
+  width: 48px;
+  padding: 8px 0 7px;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  color: var(--ink2);
+  font-family: var(--sans);
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.rail-btn:hover {
+  background: var(--fill);
+}
+
+.rail-btn.active {
+  background: var(--panel);
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+.rail-btn-icon {
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.rail-btn-label {
+  font-size: 9px;
+  font-family: var(--mono);
+  letter-spacing: 0.02em;
+}

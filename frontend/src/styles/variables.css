@@ -1,0 +1,38 @@
+/* variables.css — global design tokens + reset
+   Imported once in main.jsx. Every component inherits these. */
+
+:root {
+  --bg:        oklch(0.95  0.003 80);
+  --frame:     oklch(0.975 0.003 80);
+  --panel:     oklch(0.99  0.003 80);
+  --line:      oklch(0.86  0.004 80);
+  --line2:     oklch(0.91  0.004 80);
+  --ink:       oklch(0.30  0.005 80);
+  --ink2:      oklch(0.45  0.005 80);
+  --muted:     oklch(0.63  0.005 80);
+  --fill:      oklch(0.925 0.003 80);
+  --fill2:     oklch(0.945 0.003 80);
+  --note:      oklch(0.93  0.055 95);
+  --note-line: oklch(0.82  0.08  95);
+  --note-ink:  oklch(0.45  0.06  80);
+
+  --sans: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --r: 9px;
+
+  --rail-w:    66px;
+  --drawer-w:  266px;
+  --thread-max: 720px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
