@@ -29,7 +29,7 @@ export async function sendMessage({ message, tutorId, history = [] }) {
   }
 
   const data = await response.json();
-  return data.reply;
+  return data.response;
 }
 
 /**

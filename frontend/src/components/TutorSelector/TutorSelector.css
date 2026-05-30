@@ -1,4 +1,4 @@
-/* components/TutorSelector/TutorSelector.css */
+/* components/TutorSelector/TutorSelector.css — polished redesign */
 
 .tutor-selector-wrap {
   position: relative;
@@ -10,35 +10,34 @@
   gap: 10px;
   width: 100%;
   background: var(--panel);
-  border: 1px solid var(--line);
+  border: 1.5px solid var(--line);
   border-radius: var(--r);
-  padding: 9px 11px;
+  padding: 9px 12px;
   cursor: pointer;
   text-align: left;
   font-family: var(--sans);
-  transition: border-color 0.12s;
+  transition: border-color 0.12s, box-shadow 0.12s;
 }
 
 .tutor-selector-btn:hover {
-  border-color: var(--ink2);
+  border-color: var(--accent-mid);
+  box-shadow: 0 0 0 3px rgba(91, 164, 207, 0.12);
 }
 
 .tutor-avatar {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: var(--fill);
-  border: 1px solid var(--line);
+  background: var(--accent);
+  color: #fff;
   flex: 0 0 auto;
   display: grid;
   place-items: center;
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
-.tutor-meta {
-  flex: 1;
-  min-width: 0;
-}
+.tutor-meta { flex: 1; min-width: 0; }
 
 .tutor-meta-name {
   font-size: 12.5px;
@@ -58,17 +57,17 @@
   font-size: 11px;
 }
 
-/* Dropdown menu */
+/* Dropdown */
 .tutor-menu {
   position: absolute;
   left: 0;
   right: 0;
-  top: calc(100% + 4px);
+  top: calc(100% + 6px);
   z-index: 20;
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: var(--r);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-lg);
   padding: 6px;
 }
 
@@ -76,8 +75,8 @@
   display: flex;
   gap: 10px;
   align-items: center;
-  padding: 8px;
-  border-radius: 7px;
+  padding: 8px 9px;
+  border-radius: 8px;
   cursor: pointer;
   transition: background 0.1s;
   width: 100%;
@@ -88,7 +87,7 @@
 }
 
 .tutor-menu-option:hover {
-  background: var(--fill);
+  background: var(--accent-light);
 }
 
 .tutor-menu-name {
