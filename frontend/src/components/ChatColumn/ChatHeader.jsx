@@ -4,7 +4,7 @@ export default function ChatHeader({ tutor, isBookmarked, onToggleBookmark }) {
   return (
     <div className="chat-header">
       <span className="chat-header-avatar" aria-hidden="true">
-        {tutor?.emoji ?? "◐"}
+        {tutor?.name?.charAt(0) ?? "?"}
       </span>
       <div>
         <div className="chat-header-name">
