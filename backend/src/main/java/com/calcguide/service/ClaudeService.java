@@ -1,10 +1,16 @@
 package com.calcguide.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,22 +20,20 @@ public class ClaudeService {
     private static final String ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
     private static final String ANTHROPIC_VERSION = "2023-06-01";
 
-    private static final String SYSTEM_PROMPT = """
-            You are a knowledgeable and patient tutor. Your role is to help students understand \
-            concepts deeply rather than simply giving them answers. Guide them with clear \
-            explanations, relevant examples, and follow-up questions that encourage critical \
-            thinking. Adapt your teaching style to the student's apparent level of understanding. \
-            When a student is stuck, break the problem into smaller, manageable steps.""";
+    private static final String FALLBACK_SYSTEM_PROMPT =
+            "You are a knowledgeable and patient calculus tutor. Guide students with clear " +
+            "explanations and encourage critical thinking.";
 
     private final RestClient restClient;
     private final String model;
     private final int maxTokens;
+    private final Map<String, String> systemPrompts;
 
     public ClaudeService(
             RestClient.Builder builder,
             @Value("${anthropic.api-key}") String apiKey,
             @Value("${anthropic.model}") String model,
-            @Value("${anthropic.max-tokens}") int maxTokens) {
+            @Value("${anthropic.max-tokens}") int maxTokens) throws IOException {
         this.model = model;
         this.maxTokens = maxTokens;
         this.restClient = builder
@@ -38,14 +42,36 @@ public class ClaudeService {
                 .defaultHeader("anthropic-version", ANTHROPIC_VERSION)
                 .defaultHeader("content-type", MediaType.APPLICATION_JSON_VALUE)
                 .build();
+        this.systemPrompts = loadPersonalities();
     }
 
-    public String chat(String userMessage) {
+    private Map<String, String> loadPersonalities() throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(new ClassPathResource("personalities.json").getInputStream());
+        Map<String, String> prompts = new HashMap<>();
+        for (JsonNode p : root.get("personalities")) {
+            prompts.put(p.get("id").asText(), p.get("systemPrompt").asText());
+        }
+        return prompts;
+    }
+
+    public String chat(String tutorId, String userMessage, List<Map<String, String>> history) {
+        String systemPrompt = systemPrompts.getOrDefault(tutorId, FALLBACK_SYSTEM_PROMPT);
+
+        List<Map<String, Object>> messages = new ArrayList<>();
+        if (history != null) {
+            for (Map<String, String> entry : history) {
+                String role = "tutor".equals(entry.get("role")) ? "assistant" : entry.get("role");
+                messages.add(Map.of("role", role, "content", entry.get("content")));
+            }
+        }
+        messages.add(Map.of("role", "user", "content", userMessage));
+
         Map<String, Object> body = Map.of(
                 "model", model,
                 "max_tokens", maxTokens,
-                "system", SYSTEM_PROMPT,
-                "messages", List.of(Map.of("role", "user", "content", userMessage))
+                "system", systemPrompt,
+                "messages", messages
         );
 
         AnthropicResponse response = restClient.post()
@@ -60,7 +86,6 @@ public class ClaudeService {
         return response.content().getFirst().text();
     }
 
-    // Internal types for deserializing the Anthropic Messages API response
     record AnthropicResponse(List<ContentBlock> content) {}
     record ContentBlock(String type, String text) {}
 }
