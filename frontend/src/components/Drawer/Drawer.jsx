@@ -1,26 +1,46 @@
 // components/Drawer/Drawer.jsx
 
+import { useEffect, useState } from "react";
 import "./Drawer.css";
 import ConversationList from "./ConversationList";
+import {
+  listConversations,
+  deleteConversation,
+  formatMeta,
+} from "../../services/conversations";
 
-const HISTORY = [
-  { id: 1, title: "The limit definition",   meta: "Today · 12 messages", bookmarked: false },
-  { id: 2, title: "Power & chain rule",      meta: "Yesterday",           bookmarked: false },
-  { id: 3, title: "What is a tangent line?", meta: "Mon",                 bookmarked: false },
-  { id: 4, title: "Continuity & gaps",       meta: "Last week",           bookmarked: false },
-  { id: 5, title: "Intro: rates of change",  meta: "Last week",           bookmarked: false },
-  { id: 6, title: "Graphing f(x)=x³−x",     meta: "2 weeks ago",         bookmarked: false },
-];
+export default function Drawer({ open, activeTab, onClose, onSelectConvo, activeConvoId }) {
+  const [conversations, setConversations] = useState([]);
 
-const BOOKMARKS = [
-  { id: 7, title: "Chain rule — worked example",  meta: "saved Tue",       bookmarked: true },
-  { id: 8, title: "Why dy/dx notation?",          meta: "saved Mon",       bookmarked: true },
-  { id: 9, title: "Derivative rules cheat sheet", meta: "saved last week", bookmarked: true },
-];
+  // Re-read whenever the drawer opens — chats are saved while it's closed.
+  useEffect(() => {
+    if (!open) return;
+    listConversations()
+      .then(setConversations)
+      .catch(() => setConversations([]));
+  }, [open]);
 
-export default function Drawer({ open, activeTab, onClose, onSelectConvo }) {
-  const items = activeTab === "bookmarks" ? BOOKMARKS : HISTORY;
+  async function handleDelete(id) {
+    await deleteConversation(id);
+    setConversations((prev) => prev.filter((c) => c.id !== id));
+  }
+
+  const filtered =
+    activeTab === "bookmarks" ? conversations.filter((c) => c.bookmarked) : conversations;
+
+  const items = filtered.map((c) => ({
+    id: c.id,
+    title: c.title,
+    meta: formatMeta(c),
+    bookmarked: !!c.bookmarked,
+    active: c.id === activeConvoId,
+  }));
+
   const title = activeTab === "bookmarks" ? "Bookmarks" : "History";
+  const emptyLabel =
+    activeTab === "bookmarks"
+      ? "No bookmarks yet. Star a chat to save it here."
+      : "No conversations yet. Send a message to start one.";
 
   return (
     <aside className={`drawer${open ? " open" : ""}`} aria-label={title} aria-hidden={!open}>
@@ -29,7 +49,12 @@ export default function Drawer({ open, activeTab, onClose, onSelectConvo }) {
           <h3>{title}</h3>
           <button className="drawer-close" onClick={onClose} aria-label="Close drawer">✕</button>
         </div>
-        <ConversationList items={items} onSelect={onSelectConvo} />
+        <ConversationList
+          items={items}
+          onSelect={onSelectConvo}
+          onDelete={handleDelete}
+          emptyLabel={emptyLabel}
+        />
       </div>
     </aside>
   );
