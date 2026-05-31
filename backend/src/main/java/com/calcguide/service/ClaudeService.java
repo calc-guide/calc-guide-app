@@ -24,6 +24,16 @@ public class ClaudeService {
             "You are a knowledgeable and patient calculus tutor. Guide students with clear " +
             "explanations and encourage critical thinking.";
 
+    // Universal capability appended to every tutor's system prompt: lets the tutor
+    // draw live graphs. The frontend renders a ```desmos fenced block as an
+    // interactive Desmos graph.
+    private static final String GRAPH_CAPABILITY =
+            "\n\nGraphing: when a graph would help the student see a concept, output a " +
+            "fenced code block with language `desmos`, one expression per line in " +
+            "Desmos/LaTeX syntax (e.g. y=x^2). It renders as a live, interactive graph " +
+            "in the chat. Use it for curves, tangent lines, and visual intuition, not " +
+            "for plain arithmetic.";
+
     private final RestClient restClient;
     private final String model;
     private final int maxTokens;
@@ -57,7 +67,7 @@ public class ClaudeService {
 
     public String chat(String tutorId, String userMessage, List<Map<String, String>> history,
                        com.calcguide.model.ChatRequest.Attachment attachment) {
-        String systemPrompt = systemPrompts.getOrDefault(tutorId, FALLBACK_SYSTEM_PROMPT);
+        String systemPrompt = systemPrompts.getOrDefault(tutorId, FALLBACK_SYSTEM_PROMPT) + GRAPH_CAPABILITY;
 
         List<Map<String, Object>> messages = new ArrayList<>();
         if (history != null) {
