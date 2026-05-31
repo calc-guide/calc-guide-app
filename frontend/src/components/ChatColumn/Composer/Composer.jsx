@@ -6,18 +6,23 @@ import AttachmentChip from "./AttachmentChip";
 import VoiceListeningBanner from "./VoiceListeningBanner";
 import ComposerTools from "./ComposerTools";
 import DesmosCalculator from "./DesmosCalculator";
+import CameraCapture from "./CameraCapture";
 
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const MAX_FILE_SIZE_MB = 5;
 
-export default function Composer({ tutorName, onSend, isLoading, hasMessages }) {
+// The file-input `capture` attribute only opens the camera on mobile; desktop
+// ignores it and shows a file picker. So desktop uses a getUserMedia modal.
+const IS_MOBILE = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+
+export default function Composer({ tutorName, onSend, isLoading, hasMessages, isBookmarked, onBookmark }) {
   const [text, setText]                 = useState("");
   const [isVoiceOn, setIsVoiceOn]       = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(false);
   const [isMathOn, setIsMathOn]         = useState(false);
   const [attachment, setAttachment]     = useState(null);
   const [isDragOver, setIsDragOver]     = useState(false);
   const [fileError, setFileError]       = useState(null);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
 
   const fileInputRef   = useRef(null);
   const cameraInputRef = useRef(null);
@@ -78,9 +83,16 @@ export default function Composer({ tutorName, onSend, isLoading, hasMessages }) 
     if (attachment) {
       setAttachment(null);
       setFileError(null);
-    } else {
+    } else if (IS_MOBILE) {
       cameraInputRef.current?.click();
+    } else {
+      setIsCameraOpen(true);
     }
+  }
+
+  function handleCameraCapture(file) {
+    setIsCameraOpen(false);
+    readFile(file);
   }
 
   function handleRemoveAttachment() {
@@ -143,6 +155,12 @@ export default function Composer({ tutorName, onSend, isLoading, hasMessages }) 
         aria-hidden="true"
       />
 
+      <CameraCapture
+        visible={isCameraOpen}
+        onCapture={handleCameraCapture}
+        onClose={() => setIsCameraOpen(false)}
+      />
+
       <div className="composer-inner">
         <DesmosCalculator
           visible={isMathOn}
@@ -181,7 +199,7 @@ export default function Composer({ tutorName, onSend, isLoading, hasMessages }) 
             onVoice={() => setIsVoiceOn((v) => !v)}
             onPhoto={handlePhoto}
             onCamera={handleCamera}
-            onBookmark={() => setIsBookmarked((v) => !v)}
+            onBookmark={onBookmark}
             onMath={() => setIsMathOn((v) => !v)}
             onSend={handleSend}
             canSend={!isLoading && (!!text.trim() || !!attachment)}

@@ -9,16 +9,24 @@ import ChatHeader from "./ChatHeader";
 import MessageThread from "./MessageThread";
 import Composer from "./Composer/Composer";
 import { useChat } from "../../hooks/useChat";
+import { TUTORS } from "../../pages/Home/useHome";
 
 export default function ChatColumn({ tutor, onNewChat }) {
   const [activeRail, setActiveRail]     = useState("new");
   const [drawerOpen, setDrawerOpen]     = useState(false);
   const [drawerTab, setDrawerTab]       = useState("history");
   const [currentTutor, setCurrentTutor] = useState(tutor);
-  const [isBookmarked, setIsBookmarked] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(true);
 
-  const { messages, isLoading, handleSend } = useChat({ tutor: currentTutor });
+  const {
+    messages,
+    isLoading,
+    isBookmarked,
+    currentConversationId,
+    handleSend,
+    loadConversation,
+    toggleBookmark,
+  } = useChat({ tutor: currentTutor });
 
   function handleRailSelect(id) {
     if (id === "new") {
@@ -60,6 +68,15 @@ export default function ChatColumn({ tutor, onNewChat }) {
     handleSend(text, attachment);
   }
 
+  async function handleSelectConvo(item) {
+    const tutorId = await loadConversation(item.id);
+    const matched = TUTORS.find((t) => t.id === tutorId);
+    if (matched) setCurrentTutor(matched);
+    setShowOnboarding(false);
+    setDrawerOpen(false);
+    setActiveRail("new");
+  }
+
   return (
     <div className="app-layout">
       <Rail activeItem={activeRail} onSelect={handleRailSelect} />
@@ -77,14 +94,15 @@ export default function ChatColumn({ tutor, onNewChat }) {
         open={drawerOpen}
         activeTab={drawerTab}
         onClose={handleCloseDrawer}
-        onSelectConvo={(item) => console.log("open convo:", item)}
+        onSelectConvo={handleSelectConvo}
+        activeConvoId={currentConversationId}
       />
 
       <div className="chat-column">
         <ChatHeader
           tutor={currentTutor}
           isBookmarked={isBookmarked}
-          onToggleBookmark={() => setIsBookmarked((v) => !v)}
+          onToggleBookmark={toggleBookmark}
           hasMessages={messages.length > 0}
           onNewChat={onNewChat}
         />
@@ -100,6 +118,8 @@ export default function ChatColumn({ tutor, onNewChat }) {
           onSend={handleSendMessage}
           isLoading={isLoading}
           hasMessages={messages.length > 0}
+          isBookmarked={isBookmarked}
+          onBookmark={toggleBookmark}
         />
       </div>
     </div>
