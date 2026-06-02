@@ -1,38 +1,76 @@
-/* variables.css — global design tokens + reset
-   Imported once in main.jsx. Every component inherits these. */
+/* styles/variables.css — full design overhaul
+   Clean academic + baby blue accent */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
 
 :root {
-  --bg:        oklch(0.95  0.003 80);
-  --frame:     oklch(0.975 0.003 80);
-  --panel:     oklch(0.99  0.003 80);
-  --line:      oklch(0.86  0.004 80);
-  --line2:     oklch(0.91  0.004 80);
-  --ink:       oklch(0.30  0.005 80);
-  --ink2:      oklch(0.45  0.005 80);
-  --muted:     oklch(0.63  0.005 80);
-  --fill:      oklch(0.925 0.003 80);
-  --fill2:     oklch(0.945 0.003 80);
-  --note:      oklch(0.93  0.055 95);
-  --note-line: oklch(0.82  0.08  95);
-  --note-ink:  oklch(0.45  0.06  80);
+  /* --- Baby blue accent palette --- */
+  --accent:        #5BA4CF;   /* baby blue — primary action color     */
+  --accent-light:  #EBF4FB;   /* pale blue — hover fills, onboarding  */
+  --accent-mid:    #B5D4F4;   /* mid blue — borders, selected states  */
+  --accent-dark:   #2E7BB4;   /* deep blue — hover on accent buttons  */
+  --accent-text:   #0C447C;   /* text on pale blue backgrounds        */
 
-  --sans: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
-  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  --r: 9px;
+  /* --- Neutral backgrounds --- */
+  --bg:     #F7F8FA;           /* page background — very light blue-gray */
+  --frame:  #FFFFFF;           /* rail / drawer / panel background       */
+  --panel:  #FFFFFF;           /* cards, header, composer                */
 
-  --rail-w:    66px;
-  --drawer-w:  266px;
-  --thread-max: 720px;
+  /* --- Borders --- */
+  --line:   #E4E8EE;           /* primary borders                        */
+  --line2:  #EEF1F5;           /* subtle dividers                        */
+
+  /* --- Text --- */
+  --ink:    #1A2332;           /* primary text — deep navy, not pure black */
+  --ink2:   #4A5568;           /* secondary text                           */
+  --muted:  #8A97A8;           /* meta / placeholder                       */
+
+  /* --- Fills --- */
+  --fill:   #F0F4F8;           /* hover fill                               */
+  --fill2:  #E8EDF3;           /* selected / skeleton fill                 */
+
+  /* --- Accent note (quiz / highlight) --- */
+  --note:      #EBF4FB;
+  --note-line: #B5D4F4;
+  --note-ink:  #0C447C;
+
+  /* --- Typography --- */
+  --sans: 'DM Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --mono: 'DM Mono', ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* --- Shape --- */
+  --r:    10px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+
+  /* --- Layout --- */
+  --rail-w:     68px;
+  --drawer-w:   272px;
+  --thread-max: 740px;
+
+  /* --- Shadows --- */
+  --shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md:  0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-lg:  0 8px 24px rgba(0, 0, 0, 0.10), 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* --- Reset --- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-html, body, #root { height: 100%; }
+html, body, #root {
+  height: 100%;
+}
 
 body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--sans);
   font-size: 13px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
