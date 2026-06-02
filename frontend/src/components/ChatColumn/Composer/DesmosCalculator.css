@@ -1,60 +1,72 @@
 /* DesmosCalculator.css */
 
 .desmos-panel {
-  border: 1px solid var(--line);
-  border-radius: 12px;
+  border: 1px solid var(--accent-mid);
+  border-radius: var(--r-lg);
   overflow: hidden;
   margin-bottom: 10px;
   background: var(--panel);
+  box-shadow: var(--shadow-md);
+  animation: desmos-slide-in 0.18s ease;
+}
+
+@keyframes desmos-slide-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .desmos-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
-  background: var(--frame);
-  border-bottom: 1px solid var(--line);
+  padding: 10px 14px;
+  background: var(--accent-light);
+  border-bottom: 1px solid var(--accent-mid);
 }
 
 .desmos-toolbar span {
   font-family: var(--mono);
   font-size: 11px;
-  color: var(--muted);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--accent-text);
 }
 
 .desmos-toolbar-actions {
   display: flex;
-  gap: 6px;
+  gap: 8px;
 }
 
 .desmos-action-btn {
   font-family: var(--sans);
   font-size: 11px;
-  padding: 4px 10px;
-  border-radius: 6px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 8px;
   border: 1px solid var(--line);
   background: var(--panel);
   color: var(--ink2);
   cursor: pointer;
-  transition: background 0.12s;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
 }
 
 .desmos-action-btn:hover {
   background: var(--fill);
+  color: var(--ink);
 }
 
 .desmos-action-btn.primary {
-  background: var(--ink);
-  color: var(--panel);
-  border-color: var(--ink);
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
 }
 
 .desmos-action-btn.primary:hover {
-  filter: brightness(1.15);
+  background: var(--accent-dark);
+  border-color: var(--accent-dark);
 }
 
 .desmos-container {
-  height: 320px;
+  height: clamp(280px, 42vh, 440px);
   width: 100%;
 }

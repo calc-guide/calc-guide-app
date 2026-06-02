@@ -1,26 +1,32 @@
 // components/ChatColumn/Composer/Composer.jsx
 
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
 import "./Composer.css";
 import AttachmentChip from "./AttachmentChip";
 import VoiceListeningBanner from "./VoiceListeningBanner";
 import ComposerTools from "./ComposerTools";
 import DesmosCalculator from "./DesmosCalculator";
+import CameraCapture from "./CameraCapture";
 
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const MAX_FILE_SIZE_MB = 5;
 
-export default function Composer({ tutorName, onSend, isLoading, hasMessages }) {
-  const [text, setText]               = useState("");
-  const [isVoiceOn, setIsVoiceOn]     = useState(false);
-  const [isPhotoOn, setIsPhotoOn]     = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(false);
-  const [isMathOn, setIsMathOn]       = useState(false);
-  const [attachment, setAttachment]   = useState(null);
-  const [fileError, setFileError]     = useState(null);
+// The file-input `capture` attribute only opens the camera on mobile; desktop
+// ignores it and shows a file picker. So desktop uses a getUserMedia modal.
+const IS_MOBILE = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 
-  // Hidden file input ref — clicking the Photo button triggers this
-  const fileInputRef = useRef(null);
+export default function Composer({ tutorName, onSend, isLoading, hasMessages, isBookmarked, onBookmark }) {
+  const [text, setText]                 = useState("");
+  const [isVoiceOn, setIsVoiceOn]       = useState(false);
+  const [isMathOn, setIsMathOn]         = useState(false);
+  const [attachment, setAttachment]     = useState(null);
+  const [isDragOver, setIsDragOver]     = useState(false);
+  const [fileError, setFileError]       = useState(null);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+
+  const fileInputRef   = useRef(null);
+  const cameraInputRef = useRef(null);
 
   function handleDesmosInsert(expression) {
     setText((prev) => prev ? `${prev} ${expression}` : expression);
@@ -31,7 +37,6 @@ export default function Composer({ tutorName, onSend, isLoading, hasMessages }) 
     onSend(text, attachment);
     setText("");
     setAttachment(null);
-    setIsPhotoOn(false);
     setFileError(null);
   }
 
@@ -42,13 +47,53 @@ export default function Composer({ tutorName, onSend, isLoading, hasMessages }) 
     }
   }
 
-  // Opens the native file picker
+  function readFile(file) {
+    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+      setFileError("Please select an image file (JPEG, PNG, GIF, or WebP).");
+      return;
+    }
+    const sizeMB = file.size / (1024 * 1024);
+    if (sizeMB > MAX_FILE_SIZE_MB) {
+      setFileError(`Image must be under ${MAX_FILE_SIZE_MB}MB. Yours is ${sizeMB.toFixed(1)}MB.`);
+      return;
+    }
+    setFileError(null);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setAttachment({ name: file.name, dataUrl: e.target.result, mediaType: file.type });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handleFileChange(e) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (file) readFile(file);
+  }
+
   function handlePhoto() {
-    if (isPhotoOn) {
-      handleRemoveAttachment();
+    if (attachment) {
+      setAttachment(null);
+      setFileError(null);
     } else {
       fileInputRef.current?.click();
     }
+  }
+
+  function handleCamera() {
+    if (attachment) {
+      setAttachment(null);
+      setFileError(null);
+    } else if (IS_MOBILE) {
+      cameraInputRef.current?.click();
+    } else {
+      setIsCameraOpen(true);
+    }
+  }
+
+  function handleCameraCapture(file) {
+    setIsCameraOpen(false);
+    readFile(file);
   }
 
   // Validates and stores the selected file
@@ -80,35 +125,79 @@ export default function Composer({ tutorName, onSend, isLoading, hasMessages }) 
 
   function handleRemoveAttachment() {
     setAttachment(null);
-    setIsPhotoOn(false);
     setFileError(null);
   }
 
-  return (
-    <div className="composer">
-      <div className="composer-inner">
+  function handleDragOver(e) {
+    e.preventDefault();
+    setIsDragOver(true);
+  }
 
+  function handleDragLeave() {
+    setIsDragOver(false);
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    setIsDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) readFile(file);
+  }
+
+  function handlePaste(e) {
+    const item = Array.from(e.clipboardData.items).find(
+      (i) => i.kind === "file" && ACCEPTED_IMAGE_TYPES.includes(i.type)
+    );
+    if (!item) return;
+    e.preventDefault();
+    const file = item.getAsFile();
+    if (file) readFile(file);
+  }
+
+  return (
+    <div
+      className={`composer${isDragOver ? " drag-over" : ""}`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      onPaste={handlePaste}
+    >
+      {/* File picker — browses local filesystem */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={ACCEPTED_IMAGE_TYPES.join(",")}
+        onChange={handleFileChange}
+        style={{ display: "none" }}
+        aria-hidden="true"
+      />
+
+      {/* Camera input — opens device camera directly */}
+      <input
+        ref={cameraInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onChange={handleFileChange}
+        style={{ display: "none" }}
+        aria-hidden="true"
+      />
+
+      <CameraCapture
+        visible={isCameraOpen}
+        onCapture={handleCameraCapture}
+        onClose={() => setIsCameraOpen(false)}
+      />
+
+      <div className="composer-inner">
         <DesmosCalculator
           visible={isMathOn}
           onInsert={handleDesmosInsert}
           onClose={() => setIsMathOn(false)}
         />
 
-        {/* Hidden file input — triggered by Photo button */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/gif,image/webp"
-          onChange={handleFileChange}
-          style={{ display: "none" }}
-          aria-hidden="true"
-        />
-
-        {/* File error message */}
         {fileError && (
-          <div className="file-error">
-            ⚠ {fileError}
-          </div>
+          <div className="file-error">⚠ {fileError}</div>
         )}
 
         {attachment && (
@@ -132,12 +221,13 @@ export default function Composer({ tutorName, onSend, isLoading, hasMessages }) 
           />
           <ComposerTools
             isVoiceOn={isVoiceOn}
-            isPhotoOn={isPhotoOn}
+            isPhotoOn={!!attachment}
             isBookmarked={isBookmarked}
             isMathOn={isMathOn}
             onVoice={() => setIsVoiceOn((v) => !v)}
             onPhoto={handlePhoto}
-            onBookmark={() => setIsBookmarked((v) => !v)}
+            onCamera={handleCamera}
+            onBookmark={onBookmark}
             onMath={() => setIsMathOn((v) => !v)}
             onSend={handleSend}
             canSend={!isLoading && (!!text.trim() || !!attachment)}
@@ -146,7 +236,7 @@ export default function Composer({ tutorName, onSend, isLoading, hasMessages }) 
         </div>
 
         <p className="composer-note">
-          type · draw in calculator · speak · attach photo
+          type · draw in calculator · speak · attach photo · paste image (⌘V) · take photo
         </p>
       </div>
     </div>

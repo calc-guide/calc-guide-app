@@ -7,6 +7,8 @@ export const TUTORS = [
   { id: "newton", name: "Prof. Newton",  style: "Rigorous · proof-first"},
   { id: "sunny",  name: "Sunny",         style: "Encouraging · plain language"},
   { id: "delta",  name: "Coach Delta",   style: "Exam prep · fast drills"},
+  { id: "brown",  name: "3Blue1Brown",   style: "Intuition-first · visual storytelling"},
+  { id: "khan",   name: "Khan Academy",  style: "Step-by-step · worked examples"},
 ];
 
 export function useHome({ onStart }) {

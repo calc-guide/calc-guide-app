@@ -1,6 +1,10 @@
 // components/Drawer/ConversationList.jsx
 
-export default function ConversationList({ items, onSelect }) {
+export default function ConversationList({ items, onSelect, onDelete, emptyLabel }) {
+  if (items.length === 0) {
+    return <div className="conversation-empty">{emptyLabel}</div>;
+  }
+
   return (
     <div className="conversation-list">
       {items.map((item) => (
@@ -16,6 +20,17 @@ export default function ConversationList({ items, onSelect }) {
             <span className="convo-title">{item.title}</span>
             <span className="convo-meta">{item.meta}</span>
           </span>
+          <button
+            className="convo-delete"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(item.id);
+            }}
+            aria-label="Delete conversation"
+            title="Delete conversation"
+          >
+            ✕
+          </button>
         </div>
       ))}
     </div>

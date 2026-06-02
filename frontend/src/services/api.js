@@ -3,7 +3,10 @@
 // No component ever calls fetch() directly — they import from this file.
 // When your backend URL changes, you fix it in one place.
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+// Prod serves UI + API same-origin → relative /api paths. Dev hits the
+// local Spring Boot server. An explicit VITE_API_URL overrides both.
+const BASE_URL =
+  import.meta.env.VITE_API_URL ?? (import.meta.env.PROD ? "" : "http://localhost:8080");
 
 /**
  * Send a chat message to the Spring Boot backend.
@@ -14,11 +17,11 @@ const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
  * @param {Array}  history  - Previous messages [{ role, content }, ...]
  * @returns {Promise<string>} Claude's reply text
  */
-export async function sendMessage({ message, tutorId, history = [] }) {
+export async function sendMessage({ message, tutorId, history = [], attachment = null }) {
   const response = await fetch(`${BASE_URL}/api/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message, tutorId, history }),
+    body: JSON.stringify({ message, tutorId, history, attachment }),
   });
 
   if (!response.ok) {
@@ -26,7 +29,8 @@ export async function sendMessage({ message, tutorId, history = [] }) {
   }
 
   const data = await response.json();
-  return data.reply;
+  // Backend contract is `reply`; tolerate `response` for resilience.
+  return data.reply ?? data.response;
 }
 
 /**

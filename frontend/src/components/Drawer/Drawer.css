@@ -138,7 +138,39 @@
 
 .convo-star.bookmarked { color: var(--accent); }
 
-.convo-text { min-width: 0; }
+.convo-text { min-width: 0; flex: 1; }
+
+.convo-delete {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 3px 5px;
+  border-radius: 6px;
+  opacity: 0;
+  transition: opacity 0.1s, background 0.12s, color 0.12s;
+}
+
+.conversation-item:hover .convo-delete,
+.convo-delete:focus-visible {
+  opacity: 1;
+}
+
+.convo-delete:hover {
+  background: var(--fill);
+  color: var(--ink);
+}
+
+.conversation-empty {
+  padding: 18px 14px;
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.5;
+}
 
 .convo-title {
   display: block;
